@@ -60,7 +60,7 @@ namespace AzureResourceCommon.Services
             return result;
         }
 
-        public Dtos.Resources[] GetResources()
+        public Dtos.Resources[] GetResources(int count)
         {
             SqlConnection con = null;
             List<Dtos.Resources> results = new List<Dtos.Resources>();
@@ -71,7 +71,7 @@ namespace AzureResourceCommon.Services
                 con.Open();
                 using (var db = new Database(con))
                 {
-                    results = db.Fetch<Dtos.Resources>($"SELECT TOP(20) * FROM Resources ORDER BY Timestamp DESC");
+                    results = db.Fetch<Dtos.Resources>($"SELECT TOP({count}) * FROM Resources ORDER BY Timestamp DESC");
                 }
             }
             catch (Exception ex)

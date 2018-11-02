@@ -72,6 +72,7 @@ header h1 {
 }
 
 .cd-timeline {
+  display: none;
   overflow: hidden;
   margin: 2em auto;
 }

@@ -2,7 +2,7 @@
 <html lang="en" class="no-js">
 <head>
     <meta charset="utf-8" />
-    <title>Azure Last 20 Changes</title>
+    <title>Azure TOP(20) Changes DESC</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
@@ -14,9 +14,13 @@
     <link rel="stylesheet" href="css/timeline-demo.css"> <!-- Demo style -->
 </head>
 <body>
+    <a href="https://github.com/tyayers/AzureResourceDiff"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+
     <header>
-        <h1>Azure Last 20 Days of Changes</h1>
-        <h3>This page shows the last 20 days of resource manager provider changes in Azure, retrieved through the Azure REST API.</h3>
+        <h1>Azure TOP(20) Changes DESC</h1>
+        <div class="cd-nugget-info">
+            This page shows the last 20 days of <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-supported-services">Azure Resource Manager Provider</a> changes, taken using the <a href="https://docs.microsoft.com/en-us/rest/api/resources/providers/list">Azure REST API.</a>
+        </div>
     </header>
     <script src="js/timeline-main.js"></script> <!-- Resource JavaScript -->
     <script>
@@ -24,43 +28,22 @@
         var displayLanguage = "en";
 
         jQuery(document).ready(function () {
-            $.get("api/resources", function (data) {
+            $.get("api/resources/changes", function (data) {
 
                 if (data != undefined && data.length > 0) {
 
-                    //$("#modal-news").html("<button type='button' class='list-group-item list-group-item-action active'>Stories crazy stuff!</button>");
                     $(".cd-timeline__container").html("");
 
                     for (var i in data) {
-                        // one iteration per day of changes
                         var update = data[i];
-                        var diff = { "value": [] };
-                        if (update["differences"] != undefined && update["differences"] != "") diff = JSON.parse(update["differences"]);
-                        var resources = JSON.parse(update["resourcesJson"])["value"];
 
-                        var updateCollection = {
-                            "additions": [],
-                            "deletions": [],
-                            "changes": []
-                        };
+                        var dateObj = new Date(Date.parse(update["timestamp"]));
 
-                        for (var key in diff["value"]) {
-                            // for each resource change in a day
-                            if (isInt(key)) {
-                                var namespace = resources[key]["namespace"];
-                                var resourcePretty = JSON.stringify(resources[key], undefined, 2);
-                                var resourceDiff = JSON.stringify(diff["value"][key], undefined, 2);
-
-                                updateCollection["additions"].push({
-                                    "namespace": namespace,
-                                    "resource": resourcePretty,
-                                    "differences": resourceDiff
-                                });
-                            }
-                        }
-
-                        $(".cd-timeline__container").append(getResourceDiv(updateCollection, update["timestamp"]));
+                        $(".cd-timeline__container").append(getResourceDiv(update, dateObj.toLocaleDateString() + " - " + update["additions"] + " addition(s), " + update["others"] + " other(s)"));
                     }
+
+                    $("#loading-spinner").hide();
+                    $(".cd-timeline").fadeIn();
 
                     initTimelineScroll();
                 }
@@ -73,11 +56,11 @@
         function getResourceDiv(updates, date) {
             var result = "<div class='cd-timeline__block js-cd-block'><div class='cd-timeline__img cd-timeline__img--picture js-cd-img'><img src='img/calendar-icon.png' alt='Picture'></div><div class='cd-timeline__content js-cd-content'>";
 
-            for (var i in updates["additions"]) {
-                result += "<h2>" + updates["additions"][i]["namespace"] + "</h2> <p>" + updates["additions"][i]["differences"] + "</p>";
+            for (var i in updates["changes"]) {
+                result += "<h2>" + updates["changes"][i]["namespace"] + "</h2> <p>" + updates["changes"][i]["differences"] + "</p>";
             }
 
-            result += "<a href='#0' class='cd-timeline__read-more'>Read more</a><span class='cd-timeline__date'>" + date + "</span></div ></div > ";
+            result += "<a disabled href='#' class='cd-timeline__read-more'>More info (coming soon)</a><span class='cd-timeline__date'>" + date + "</span></div ></div > ";
 
             return result;
         }
@@ -91,13 +74,25 @@
         }
     </script>
 
+    <div id="loading-spinner">
+        <ul class="spinner">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <center>Loading...</center>
+    </div>
+
     <section class="cd-timeline js-cd-timeline">
         <div class="cd-timeline__container">
 
         </div>
     </section> <!-- cd-timeline -->
 
-
+    <!--div class="cd-footer">
+        
+    </div-->
 
 </body>
 </html>
