@@ -71,7 +71,7 @@ namespace AzureResourceCommon.Services
                 con.Open();
                 using (var db = new Database(con))
                 {
-                    results = db.Fetch<Dtos.Resources>($"SELECT TOP(50) * FROM Resources ORDER BY Timestamp DESC");
+                    results = db.Fetch<Dtos.Resources>($"SELECT TOP(20) * FROM Resources ORDER BY Timestamp DESC");
                 }
             }
             catch (Exception ex)
