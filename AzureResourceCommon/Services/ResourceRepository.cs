@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
 
-namespace AzureResourceFunctions.Services
+namespace AzureResourceCommon.Services
 {
     public class ResourceRepository
     {
@@ -58,6 +58,32 @@ namespace AzureResourceFunctions.Services
             }
 
             return result;
+        }
+
+        public Dtos.Resources[] GetResources()
+        {
+            SqlConnection con = null;
+            List<Dtos.Resources> results = new List<Dtos.Resources>();
+            try
+            {
+                string conString = System.Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
+                con = new SqlConnection(conString);
+                con.Open();
+                using (var db = new Database(con))
+                {
+                    results = db.Fetch<Dtos.Resources>($"SELECT TOP(50) * FROM Resources ORDER BY Timestamp DESC");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Error in GetResources. " + ex.ToString());
+            }
+            finally
+            {
+                if (con != null) con.Close();
+            }
+
+            return results.ToArray();
         }
     }
 }

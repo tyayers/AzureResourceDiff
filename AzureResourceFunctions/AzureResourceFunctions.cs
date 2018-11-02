@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Text;
 using JsonDiffPatchDotNet;
 using Newtonsoft.Json.Linq;
+using AzureResourceCommon;
 
 namespace AzureResourceFunctions
 {
@@ -25,9 +26,9 @@ namespace AzureResourceFunctions
             string token = GetAzureBearerToken();
             string resourceProviders = GetAzureResourceProviders(token);
 
-            Services.ResourceRepository repo = new Services.ResourceRepository();
+            AzureResourceCommon.Services.ResourceRepository repo = new AzureResourceCommon.Services.ResourceRepository();
 
-            Dtos.Resources resource = repo.GetLastResource();
+            AzureResourceCommon.Dtos.Resources resource = repo.GetLastResource();
 
             if (resource == null || resource.ResourcesJson != resourceProviders)
             {
@@ -43,7 +44,7 @@ namespace AzureResourceFunctions
                     if (patch != null) diffs = patch.ToString();
                 }
 
-                Dtos.Resources res = new Dtos.Resources()
+                AzureResourceCommon.Dtos.Resources res = new AzureResourceCommon.Dtos.Resources()
                 {
                     ResourcesJson = resourceProviders,
                     Differences = diffs,
@@ -88,7 +89,7 @@ namespace AzureResourceFunctions
 
             string clientId = System.Environment.GetEnvironmentVariable("SpClientId");
             string clientSecret = System.Environment.GetEnvironmentVariable("SpClientSecret");
-
+            string tenantId = System.Environment.GetEnvironmentVariable("TenantId");
             using (HttpClient client = new HttpClient())
             {
                 string contentType = "application/x-www-form-urlencoded";

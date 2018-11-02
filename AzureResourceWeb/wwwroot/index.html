@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans:400,700' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="css/timeline-reset.css"> <!-- CSS reset -->
+    <link rel="stylesheet" href="css/timeline-style.css"> <!-- Resource style -->
+    <link rel="stylesheet" href="css/timeline-demo.css"> <!-- Demo style -->
+</head>
+<body>
+    <header>
+        <h1>Azure Resource History</h1>
+    </header>
+    <script src="js/timeline-main.js"></script> <!-- Resource JavaScript -->
+    <script>
+
+        var displayLanguage = "en";
+
+        jQuery(document).ready(function () {
+            $.get("api/resources", function (data) {
+
+                if (data != undefined && data.length > 0) {
+
+                    //$("#modal-news").html("<button type='button' class='list-group-item list-group-item-action active'>Stories crazy stuff!</button>");
+                    $(".cd-timeline__container").html("");
+
+                    for (var i in data) {
+                        // one iteration per day of changes
+                        var update = data[i];
+                        var diff = { "value": [] };
+                        if (update["differences"] != undefined && update["differences"] != "") diff = JSON.parse(update["differences"]);
+                        var resources = JSON.parse(update["resourcesJson"])["value"];
+
+                        var updateCollection = {
+                            "additions": [],
+                            "deletions": [],
+                            "changes": []
+                        };
+
+                        for (var key in diff["value"]) {
+                            // for each resource change in a day
+                            if (isInt(key)) {
+                                var namespace = resources[key]["namespace"];
+                                var resourcePretty = JSON.stringify(resources[key], undefined, 2);
+                                var resourceDiff = JSON.stringify(diff["value"][key], undefined, 2);
+
+                                updateCollection["additions"].push({
+                                    "namespace": namespace,
+                                    "resource": resourcePretty,
+                                    "differences": resourceDiff
+                                });
+                            }
+                        }
+
+                        $(".cd-timeline__container").append(getResourceDiv(updateCollection, update["timestamp"]));
+                    }
+
+                    initTimelineScroll();
+                }
+                else {
+
+                }
+            });
+        });
+
+        function getResourceDiv(updates, date) {
+            var result = "<div class='cd-timeline__block js-cd-block'><div class='cd-timeline__img cd-timeline__img--picture js-cd-img'><img src='img/calendar-icon.png' alt='Picture'></div><div class='cd-timeline__content js-cd-content'>";
+
+            for (var i in updates["additions"]) {
+                result += "<h2>" + updates["additions"][i]["namespace"] + "</h2> <p>" + updates["additions"][i]["differences"] + "</p>";
+            }
+
+            result += "<a href='#0' class='cd-timeline__read-more'>Read more</a><span class='cd-timeline__date'>" + date + "</span></div ></div > ";
+
+            return result;
+        }
+
+        function isInt(value) {
+            if (isNaN(value)) {
+                return false;
+            }
+            var x = parseFloat(value);
+            return (x | 0) === x;
+        }
+    </script>
+
+    <section class="cd-timeline js-cd-timeline">
+        <div class="cd-timeline__container">
+
+        </div>
+    </section> <!-- cd-timeline -->
+
+
+
+</body>
+</html>

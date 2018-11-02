@@ -41,6 +41,7 @@ namespace AzureResourceWeb
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseMvc();
         }
     }

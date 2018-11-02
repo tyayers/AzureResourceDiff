@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AzureResourceFunctions.Dtos
+namespace AzureResourceCommon.Dtos
 {
     public class Resources
     {
