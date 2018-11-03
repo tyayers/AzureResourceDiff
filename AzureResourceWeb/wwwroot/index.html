@@ -2,7 +2,7 @@
 <html lang="en" class="no-js">
 <head>
     <meta charset="utf-8" />
-    <title>Azure TOP(20) Changes DESC</title>
+    <title>Azure Top Changes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
@@ -36,13 +36,18 @@
                 if (data != undefined && data.length > 0) {
 
                     $(".cd-timeline__container").html("");
-
+                    
                     for (var i in data) {
                         var update = data[i];
 
                         var dateObj = new Date(Date.parse(update["timestamp"]));
+                        var id = update["id"];
+                        var prevId = undefined;
+                        if (data[parseInt(i) + 1] != undefined)
+                            prevId = data[parseInt(i) + 1]["id"];
 
-                        $(".cd-timeline__container").append(getResourceDiv(update, dateObj.toLocaleDateString() + " - " + update["additions"] + " addition(s), " + update["others"] + " other(s)"));
+                        $(".cd-timeline__container").append(getResourceDiv(update, dateObj.toLocaleDateString() + " - " + update["additions"] + " addition(s), " + update["others"] + " other(s)", prevId, id));
+                        prevId = id;
                     }
 
                     $("#loading-spinner").hide();
@@ -56,14 +61,17 @@
             });
         });
 
-        function getResourceDiv(updates, date) {
+        function getResourceDiv(updates, date, resPrevId, resId) {
             var result = "<div class='cd-timeline__block js-cd-block'><div class='cd-timeline__img cd-timeline__img--picture js-cd-img'><img src='img/calendar-icon.png' alt='Picture'></div><div class='cd-timeline__content js-cd-content'>";
 
             for (var i in updates["changes"]) {
                 result += "<h2>" + updates["changes"][i]["namespace"] + "</h2> <p>" + updates["changes"][i]["differences"] + "</p>";
             }
 
-            result += "<a disabled href='#' class='cd-timeline__read-more'>More info (coming soon)</a><span class='cd-timeline__date'>" + date + "</span></div ></div > ";
+            if (resPrevId != undefined)
+                result += "<a href='/view-detail.html?resId1=" + resPrevId + "&resId2=" + resId + "' target='_blank' class='cd-timeline__read-more'>More info</a><span class='cd-timeline__date'>" + date + "</span></div ></div > ";
+            else
+                result += "<a disabled href='#' target='_blank' class='cd-timeline__read-more'>More info</a><span class='cd-timeline__date'>" + date + "</span></div ></div > ";
 
             return result;
         }

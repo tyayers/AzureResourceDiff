@@ -2,7 +2,7 @@
 <html lang="en" class="no-js">
 <head>
     <meta charset="utf-8" />
-    <title>Azure TOP(20) Changes DESC</title>
+    <title>Azure Resource Manager Provider Detailed Changes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
@@ -22,29 +22,77 @@
     <a href="https://github.com/tyayers/AzureResourceDiff"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
 
     <header>
-        <h1>Azure TOP(20) Changes DESC</h1>
+        <h1>Azure Resource Manager Provider Detailed Changes</h1>
         <div class="cd-nugget-info">
             This page shows the last 20 days of <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-supported-services">Azure Resource Manager Provider</a> changes, taken using the <a href="https://docs.microsoft.com/en-us/rest/api/resources/providers/list">Azure REST API.</a>
         </div>
     </header>
     <script src="js/timeline-main.js"></script> <!-- Resource JavaScript -->
     <script>
-        $.get("api/resource/11", function (data) {
 
-            var left = JSON.parse(data["resourcesJson"]);
-            $.get("api/resource/12", function (data) {
-                var right = JSON.parse(data["resourcesJson"]);
+        var query = getQueryParams(document.location.search);
+        var resId1 = query.resId1;
+        var resId2 = query.resId2;
 
-                var delta = jsondiffpatch.diff(left, right);
+        $.get("api/resource/" + resId1, function (data) {
 
-                // beautiful html diff
-                document.getElementById('visual').innerHTML = jsondiffpatch.formatters.html.format(delta, left);
+            var left = data;
+            $.get("api/resource/" + resId2, function (data) {
 
-                // self-explained json
-                document.getElementById('annotated').innerHTML = jsondiffpatch.formatters.annotated.format(delta, left);
+                var right = data;
 
+                var diff = JSON.parse(right["differences"]);
+                var rightResources = JSON.parse(right["resourcesJson"])["value"];
+                var leftResources = JSON.parse(left["resourcesJson"])["value"];
+
+                var rightDate = new Date(Date.parse(right["timestamp"]));
+                var leftDate = new Date(Date.parse(left["timestamp"]));
+                $(document.body).append("<br/><h1>Differences in Azure Resource Providers between " + leftDate.toLocaleDateString() + " and " + rightDate.toLocaleDateString() + "</h1><br/>"); 
+
+                for (var key in diff["value"]) {
+
+                    // for each resource change in a day
+                    if (isInt(key)) {
+
+                        var rightResource = rightResources[key];
+                        var leftResource = leftResources[key];
+
+                        var delta = jsondiffpatch.diff(leftResource, rightResource);
+
+                        $(document.body).append("<div><br/><h1>" + rightResource["namespace"] + "</h1><br/>" + jsondiffpatch.formatters.html.format(delta, leftResource) + "</div>");
+                        // beautiful html diff
+                        //document.getElementById('visual').innerHTML = jsondiffpatch.formatters.html.format(delta, leftResource);
+
+                        //// self-explained json
+                        //document.getElementById('annotated').innerHTML = jsondiffpatch.formatters.annotated.format(delta, leftResource);
+                    }
+                }
+
+                $("#loading-spinner").hide();
             });          
         });
+
+        function isInt(value) {
+            if (isNaN(value)) {
+                return false;
+            }
+            var x = parseFloat(value);
+            return (x | 0) === x;
+        }
+
+        function getQueryParams(qs) {
+            qs = qs.split('+').join(' ');
+
+            var params = {},
+                tokens,
+                re = /[?&]?([^=]+)=([^&]*)/g;
+
+            while (tokens = re.exec(qs)) {
+                params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+            }
+
+            return params;
+        }
 
     </script>
 
@@ -57,10 +105,6 @@
         </ul>
         <center>Loading...</center>
     </div>
-    
-    <div id="visual"></div>
-    <hr />
-    <div id="annotated"></div>
     
     <!--div class="cd-footer">
 
