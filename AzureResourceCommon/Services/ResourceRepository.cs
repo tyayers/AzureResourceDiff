@@ -8,7 +8,7 @@ namespace AzureResourceCommon.Services
 {
     public class ResourceRepository
     {
-        public void InsertResourceJson(Dtos.Resources newResources)
+        public void InsertResourceJson(Dtos.Resource newResources)
         {
             SqlConnection con = null;
 
@@ -31,18 +31,18 @@ namespace AzureResourceCommon.Services
             }
         }
 
-        public Dtos.Resources GetLastResource()
+        public Dtos.Resource GetLastResource()
         {
             SqlConnection con = null;
-            List<Dtos.Resources> results = null; ;
-            Dtos.Resources result = null;
+            List<Dtos.Resource> results = null; ;
+            Dtos.Resource result = null;
             try
             {
                 con = new SqlConnection(System.Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process));
                 con.Open();
                 using (var db = new Database(con))
                 {
-                    results = db.Fetch<Dtos.Resources>($"SELECT TOP(1) * FROM Resources ORDER BY Timestamp DESC");
+                    results = db.Fetch<Dtos.Resource>($"SELECT TOP(1) * FROM Resources ORDER BY Timestamp DESC");
                 }
 
                 if (results != null && results.Count > 0)
@@ -60,10 +60,10 @@ namespace AzureResourceCommon.Services
             return result;
         }
 
-        public Dtos.Resources[] GetResources(int count)
+        public Dtos.Resource[] GetResources(int count)
         {
             SqlConnection con = null;
-            List<Dtos.Resources> results = new List<Dtos.Resources>();
+            List<Dtos.Resource> results = new List<Dtos.Resource>();
             try
             {
                 string conString = System.Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
@@ -71,7 +71,7 @@ namespace AzureResourceCommon.Services
                 con.Open();
                 using (var db = new Database(con))
                 {
-                    results = db.Fetch<Dtos.Resources>($"SELECT TOP({count}) * FROM Resources ORDER BY Timestamp DESC");
+                    results = db.Fetch<Dtos.Resource>($"SELECT TOP({count}) * FROM Resources ORDER BY Timestamp DESC");
                 }
             }
             catch (Exception ex)
@@ -84,6 +84,32 @@ namespace AzureResourceCommon.Services
             }
 
             return results.ToArray();
+        }
+
+        public Dtos.Resource GetResource(int Id)
+        {
+            SqlConnection con = null;
+            Dtos.Resource result = null;
+            try
+            {
+                string conString = System.Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
+                con = new SqlConnection(conString);
+                con.Open();
+                using (var db = new Database(con))
+                {
+                    result = db.SingleById<Dtos.Resource>(Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Error in GetResources. " + ex.ToString());
+            }
+            finally
+            {
+                if (con != null) con.Close();
+            }
+
+            return result;
         }
     }
 }

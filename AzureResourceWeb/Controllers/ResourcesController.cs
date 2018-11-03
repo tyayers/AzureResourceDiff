@@ -10,16 +10,27 @@ namespace AzureResourceWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ResourcesController : ControllerBase
+    public class ResourceController : ControllerBase
     {
         // GET api/resources
         [HttpGet]
-        public ActionResult<IEnumerable<AzureResourceCommon.Dtos.Resources>> Get()
+        public ActionResult<IEnumerable<AzureResourceCommon.Dtos.Resource>> Get()
         {
             AzureResourceCommon.Services.ResourceRepository repo = new AzureResourceCommon.Services.ResourceRepository();
-            AzureResourceCommon.Dtos.Resources[] resources = repo.GetResources(20);
+            AzureResourceCommon.Dtos.Resource[] resources = repo.GetResources(20);
 
             return resources;
+        }
+
+        // GET api/getchanges
+        [HttpGet("{resourceid}")]
+        public ActionResult<Resource> Get(int resourceid)
+        {
+            Resource result = null;
+            AzureResourceCommon.Services.ResourceRepository repo = new AzureResourceCommon.Services.ResourceRepository();
+
+            result = repo.GetResource(resourceid);
+            return result;
         }
 
         // GET api/getchanges
@@ -30,9 +41,9 @@ namespace AzureResourceWeb.Controllers
             List<DailyResourceChanges> changes = new List<DailyResourceChanges>();
 
             AzureResourceCommon.Services.ResourceRepository repo = new AzureResourceCommon.Services.ResourceRepository();
-            AzureResourceCommon.Dtos.Resources[] resources = repo.GetResources(20);
+            AzureResourceCommon.Dtos.Resource[] resources = repo.GetResources(20);
 
-            foreach(AzureResourceCommon.Dtos.Resources rec in resources)
+            foreach (AzureResourceCommon.Dtos.Resource rec in resources)
             {
                 if (!String.IsNullOrEmpty(rec.Differences))
                 {
@@ -52,7 +63,7 @@ namespace AzureResourceWeb.Controllers
                         {
                             // We have a change
                             ResourceChanges change = new ResourceChanges();
-                            JObject recDetailJson = (JObject) recJson["value"][value];
+                            JObject recDetailJson = (JObject)recJson["value"][value];
                             change.Namespace = recDetailJson["namespace"].ToString();
                             change.Differences = prop.Value.ToString();
                             dailyChanges.Changes.Add(change);

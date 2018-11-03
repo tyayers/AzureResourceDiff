@@ -1,10 +1,13 @@
-﻿using System;
+﻿using NPoco;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace AzureResourceCommon.Dtos
 {
-    public class Resources
+    [TableName("Resources")]
+    [PrimaryKey("Id")]
+    public class Resource
     {
         public int Id { get; set; }
         public string ResourcesJson { get; set; }

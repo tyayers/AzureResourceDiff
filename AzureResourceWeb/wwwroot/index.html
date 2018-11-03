@@ -20,7 +20,7 @@
     <a href="https://github.com/tyayers/AzureResourceDiff"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
 
     <header>
-        <h1>Azure TOP(20) Changes DESC</h1>
+        <h1>Azure Changes</h1>
         <div class="cd-nugget-info">
             This page shows the last 20 days of <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-supported-services">Azure Resource Manager Provider</a> changes, taken using the <a href="https://docs.microsoft.com/en-us/rest/api/resources/providers/list">Azure REST API.</a>
         </div>
@@ -31,7 +31,7 @@
         var displayLanguage = "en";
 
         jQuery(document).ready(function () {
-            $.get("api/resources/changes", function (data) {
+            $.get("api/resource/changes", function (data) {
 
                 if (data != undefined && data.length > 0) {
 

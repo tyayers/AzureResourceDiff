@@ -28,7 +28,7 @@ namespace AzureResourceFunctions
 
             AzureResourceCommon.Services.ResourceRepository repo = new AzureResourceCommon.Services.ResourceRepository();
 
-            AzureResourceCommon.Dtos.Resources resource = repo.GetLastResource();
+            AzureResourceCommon.Dtos.Resource resource = repo.GetLastResource();
 
             if (resource == null || resource.ResourcesJson != resourceProviders)
             {
@@ -44,7 +44,7 @@ namespace AzureResourceFunctions
                     if (patch != null) diffs = patch.ToString();
                 }
 
-                AzureResourceCommon.Dtos.Resources res = new AzureResourceCommon.Dtos.Resources()
+                AzureResourceCommon.Dtos.Resource res = new AzureResourceCommon.Dtos.Resource()
                 {
                     ResourcesJson = resourceProviders,
                     Differences = diffs,
