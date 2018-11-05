@@ -39,34 +39,38 @@
             var left = data;
             $.get("api/resource/" + resId2, function (data) {
 
-                var right = data;
+                if (data != undefined && data != "") {
+                    var right = data;
 
-                var diff = JSON.parse(right["differences"]);
-                var rightResources = JSON.parse(right["resourcesJson"])["value"];
-                var leftResources = JSON.parse(left["resourcesJson"])["value"];
+                    var diff = JSON.parse(right["differences"]);
+                    var rightResources = JSON.parse(right["resourcesJson"])["value"];
+                    var leftResources = JSON.parse(left["resourcesJson"])["value"];
 
-                var rightDate = new Date(Date.parse(right["timestamp"]));
-                var leftDate = new Date(Date.parse(left["timestamp"]));
-                $(document.body).append("<br/><h1>Differences in Azure Resource Providers between " + leftDate.toLocaleDateString() + " and " + rightDate.toLocaleDateString() + "</h1><br/>"); 
+                    var rightDate = new Date(Date.parse(right["timestamp"]));
+                    var leftDate = new Date(Date.parse(left["timestamp"]));
+                    $(document.body).append("<br/><h1>Differences in Azure Resource Providers between " + leftDate.toLocaleDateString() + " and " + rightDate.toLocaleDateString() + "</h1><br/>");
 
-                for (var key in diff["value"]) {
+                    for (var key in diff["value"]) {
 
-                    // for each resource change in a day
-                    if (isInt(key)) {
+                        // for each resource change in a day
+                        if (isInt(key)) {
 
-                        var rightResource = rightResources[key];
-                        var leftResource = leftResources[key];
+                            var rightResource = rightResources[key];
+                            var leftResource = leftResources[key];
 
-                        var delta = jsondiffpatch.diff(leftResource, rightResource);
+                            var delta = jsondiffpatch.diff(leftResource, rightResource);
 
-                        $(document.body).append("<div><br/><h1>" + rightResource["namespace"] + "</h1><br/>" + jsondiffpatch.formatters.html.format(delta, leftResource) + "</div>");
-                        // beautiful html diff
-                        //document.getElementById('visual').innerHTML = jsondiffpatch.formatters.html.format(delta, leftResource);
+                            $(document.body).append("<div><br/><h1>" + rightResource["namespace"] + "</h1><br/>" + jsondiffpatch.formatters.html.format(delta, leftResource) + "</div>");
+                            // beautiful html diff
+                            //document.getElementById('visual').innerHTML = jsondiffpatch.formatters.html.format(delta, leftResource);
 
-                        //// self-explained json
-                        //document.getElementById('annotated').innerHTML = jsondiffpatch.formatters.annotated.format(delta, leftResource);
+                            //// self-explained json
+                            //document.getElementById('annotated').innerHTML = jsondiffpatch.formatters.annotated.format(delta, leftResource);
+                        }
                     }
                 }
+                else
+                    $(document.body).append("<div><br/><h1>No results found!</h1></div>");
 
                 $("#loading-spinner").hide();
             });          
