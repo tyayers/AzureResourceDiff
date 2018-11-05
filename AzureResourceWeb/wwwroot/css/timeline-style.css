@@ -255,6 +255,7 @@ header h1 {
 .cd-timeline__read-more,
 .cd-timeline__date {
   font-size: 1.3rem;
+  text-decoration: none;
 }
 
 .cd-timeline__content p {
