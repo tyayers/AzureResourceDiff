@@ -39,7 +39,6 @@ namespace AzureResourceWeb.Controllers
         public ActionResult<IEnumerable<DailyResourceChanges>> GetChanges()
         {
             List<DailyResourceChanges> changes = new List<DailyResourceChanges>();
-
             AzureResourceCommon.Services.ResourceRepository repo = new AzureResourceCommon.Services.ResourceRepository();
             AzureResourceCommon.Dtos.Resource[] resources = repo.GetResources(20);
 
@@ -66,6 +65,7 @@ namespace AzureResourceWeb.Controllers
                             JObject recDetailJson = (JObject)recJson["value"][value];
                             change.Namespace = recDetailJson["namespace"].ToString();
                             change.Differences = prop.Value.ToString();
+
                             dailyChanges.Changes.Add(change);
                         }
                         else if (prop.Name == "_t")

@@ -77,6 +77,11 @@ namespace AzureResourceFunctions
                 {
                     var JsonDataResponse = msg.Content.ReadAsStringAsync().Result;
                     result = JsonDataResponse;
+
+                    if (result.Contains(subId))
+                    {
+                        result = result.Replace(subId, "YYYYYYYY-YYYY");
+                    }
                 }
             }
 
@@ -124,6 +129,47 @@ namespace AzureResourceFunctions
             }
 
             return token;
+        }
+    }
+
+    public static class AzureResourceCleanupFunctions
+    {
+        [FunctionName("AzureResourceRemoveSubId")]
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
+        {
+            log.Info("C# HTTP trigger function AzureResourceRemoveSubId processed a request.");
+            AzureResourceCommon.Services.ResourceRepository repo = new AzureResourceCommon.Services.ResourceRepository();
+
+            string subId = System.Environment.GetEnvironmentVariable("SubscriptionId");
+
+            AzureResourceCommon.Dtos.Resource[] resources = repo.GetResources();
+
+            foreach (AzureResourceCommon.Dtos.Resource resource in resources)
+            {
+                bool foundMatch = false;
+
+                if (resource.Differences.Contains(subId))
+                {
+                    foundMatch = true;
+                    // Must be corrected, remove subid from diff json
+                    resource.Differences = resource.Differences.Replace(subId, "YYYYYYYY-YYYY");                    
+                }
+
+                if (resource.ResourcesJson.Contains(subId))
+                {
+                    foundMatch = true;
+                    // Must be corrected, remove subid from resource json
+                    resource.ResourcesJson = resource.ResourcesJson.Replace(subId, "YYYYYYYY-YYYY");
+                }
+
+                if (foundMatch)
+                {
+                    // Update back to DB
+                    repo.UpdateResourceJson(resource);
+                }
+            }
+
+            return new OkObjectResult("news checked.");
         }
     }
 }
