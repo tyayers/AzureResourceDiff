@@ -6,6 +6,7 @@
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #666;
 }
 
 .ns-content {

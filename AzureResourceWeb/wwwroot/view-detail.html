@@ -72,7 +72,7 @@
 
                             var delta = jsondiffpatch.diff(leftResource, rightResource);
 
-                            $(document.body).append("<div><br/><h1>" + rightResource["namespace"] + "</h1><br/>" + jsondiffpatch.formatters.html.format(delta, leftResource) + "</div>");
+                            $(document.body).append("<div><br/><h1 class='ns-header'>" + rightResource["namespace"] + "</h1><br/>" + jsondiffpatch.formatters.html.format(delta, leftResource) + "</div>");
                         }
                     }
                 }
