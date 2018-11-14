@@ -1,5 +1,23 @@
 /* demo style */
 
+.ns-header {
+    padding-top: 3px;
+    padding-bottom: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ns-content {
+    font-size: 11px;
+    overflow-x: scroll;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.ns-subheader {
+    font-size: 14px;
+}
+
 a[disabled], a[disabled]:hover {
     pointer-events: none;
     color: #e1e1e1;

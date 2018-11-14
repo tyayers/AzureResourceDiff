@@ -34,8 +34,7 @@
 
     <header>
         <h1>Azure Changes Details</h1>
-        <div class="cd-nugget-info">
-            This page shows the detailed changes of <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-supported-services">Azure Resource Manager Providers</a> loaded through the <a href="https://docs.microsoft.com/en-us/rest/api/resources/providers/list">Azure REST API.</a>
+        <div id="detail-subheader"class="cd-nugget-info">
         </div>
     </header>
     <script src="js/timeline-main.js"></script> <!-- Resource JavaScript -->
@@ -59,7 +58,9 @@
 
                     var rightDate = new Date(Date.parse(right["timestamp"]));
                     var leftDate = new Date(Date.parse(left["timestamp"]));
-                    $(document.body).append("<br/><h1>Differences in Azure Resource Providers between " + leftDate.toLocaleDateString() + " and " + rightDate.toLocaleDateString() + "</h1><br/>");
+                    //$(document.body).append("<br/><h1>Differences in Azure Resource Providers between " + leftDate.toLocaleDateString() + " and " + rightDate.toLocaleDateString() + "</h1><br/>");
+
+                    $("#detail-subheader").append("Differences in Azure Resource Providers between " + leftDate.toLocaleDateString() + " and " + rightDate.toLocaleDateString());
 
                     for (var key in diff["value"]) {
 
