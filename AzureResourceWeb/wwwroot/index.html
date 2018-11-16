@@ -57,7 +57,7 @@
                         if (data[parseInt(i) + 1] != undefined)
                             prevId = data[parseInt(i) + 1]["id"];
 
-                        $(".cd-timeline__container").append(getResourceDiv(update, dateObj.toLocaleDateString() + " - " + update["additions"] + " addition(s) to namespaces, " + update["others"] + " other changes(s)", prevId, id));
+                        $(".cd-timeline__container").append(getResourceDiv(update, dateObj.toLocaleDateString() + " - " + update["additions"] + " change(s) to namespaces", prevId, id));
                         prevId = id;
                     }
 
